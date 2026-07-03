@@ -7,40 +7,45 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        /* Fond neutre autour du téléphone */
-        body {
-            background-color: #e5e5e5;
-            padding: 40px 0;
-            font-family: Arial, sans-serif;
-        }
+       /* Fond neutre autour de l'application */
+body {
+    background-color: #e5e5e5;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Prend toute la hauteur de l'écran de l'iPhone */
+}
 
-        /* Téléphone style iPhone avec hauteur fixe */
-        .iphone {
-            width: 100%;
-            max-width: 390px;
-            height: 680px; /* Fixe la hauteur totale du téléphone */
-            margin: 0 auto;
-            
-            /* Image de fond combinée avec un fond blanc pour la rendre plus pâle */
-            background-image: url("https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1000&auto=format&fit=crop");
-            background-color: rgba(255, 255, 255, 0.75); 
-            background-blend-mode: overlay; 
-            
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            
-            border-radius: 40px;
-            padding: 30px 20px;
-            box-shadow: 0px 0px 40px rgba(0,0,0,0.35);
-            box-sizing: border-box;
-            position: relative;
-            
-            /* Force l'iPhone à utiliser Flexbox pour bien repousser les éléments */
-            display: flex;
-            flex-direction: column;
-        }
-
+/* Téléphone style iPhone adapté aux écrans récents */
+.iphone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh; /* S'ajuste dynamiquement à la hauteur de ton iPhone 16e */
+    max-height: 844px; /* Hauteur maximale standard pour les écrans récents */
+    margin: 0 auto;
+    
+    /* Image de fond combinée avec un fond blanc pour la rendre plus pâle */
+    background-image: url("https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1000&auto=format&fit=crop");
+    background-color: rgba(255, 255, 255, 0.75); 
+    background-blend-mode: overlay; 
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    border-radius: 40px;
+    padding: 40px 20px 30px 20px; /* Plus d'espace en haut pour l'encoche de l'iPhone */
+    box-shadow: 0px 0px 40px rgba(0,0,0,0.35);
+    box-sizing: border-box;
+    position: relative;
+    
+    /* Force l'iPhone à utiliser Flexbox pour bien repousser les éléments */
+    display: flex;
+    flex-direction: column;
+}
         /* Titre en ORANGE */
         h1 {
             text-align: center;
