@@ -1,0 +1,8 @@
+{
+  "name": "Ma liste de tâches",
+  "short_name": "Mes Tâches",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#e5e5e5",
+  "theme_color": "#ff9500"
+}
