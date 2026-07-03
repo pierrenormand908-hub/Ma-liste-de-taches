@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Liste de tâches</title>
+
+    <style>
+        /* Fond neutre autour du téléphone */
+        body {
+            background-color: #e5e5e5;
+            padding: 40px 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Téléphone style iPhone avec hauteur fixe */
+        .iphone {
+            width: 100%;
+            max-width: 390px;
+            height: 680px; /* Fixe la hauteur totale du téléphone */
+            margin: 0 auto;
+            
+            /* Image de fond combinée avec un fond blanc pour la rendre plus pâle */
+            background-image: url("https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1000&auto=format&fit=crop");
+            background-color: rgba(255, 255, 255, 0.75); 
+            background-blend-mode: overlay; 
+            
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            border-radius: 40px;
+            padding: 30px 20px;
+            box-shadow: 0px 0px 40px rgba(0,0,0,0.35);
+            box-sizing: border-box;
+            position: relative;
+            
+            /* Force l'iPhone à utiliser Flexbox pour bien repousser les éléments */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Titre en ORANGE */
+        h1 {
+            text-align: center;
+            color: #ff9500; 
+            margin-bottom: 20px;
+            text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15); 
+        }
+
+        /* Conteneur pour ranger la saisie sur une seule ligne */
+        .zone-saisie {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        /* Style de base pour les deux rectangles de texte et date */
+        .champ-saisie {
+            padding: 10px;
+            font-size: 15px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box; 
+            height: 41px; 
+        }
+
+        /* Largeurs spécifiques pour que tout entre sur la même ligne */
+        #inputTache {
+            flex-grow: 2; 
+            width: 130px;
+            font-size: 15px;
+        }
+
+        /* Transforme le champ en un joli petit carré avec une icône de calendrier */
+        #inputDate {
+            width: 45px; 
+            cursor: pointer;
+            background-color: white;
+            
+            /* Ajoute l'icône de calendrier en arrière-plan */
+            background-image: url('https://cdn-icons-png.flaticon.com/512/747/747310.png');
+            background-size: 22px; 
+            background-repeat: no-repeat;
+            background-position: center;
+            
+            /* Cache le texte du navigateur à l'intérieur du carré */
+            color: transparent;
+        }
+
+        /* Force le texte à rester invisible même quand on choisit une date */
+        #inputDate::-webkit-datetime-edit {
+            color: transparent;
+        }
+
+        /* Effet lumineux bleu quand on clique dans un champ */
+        .champ-saisie:focus {
+            border-color: #007aff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 122, 255, 0.3);
+        }
+
+        /* LE BOUTON AJOUTER - EFFET PLASTIQUE REHAUSSÉ */
+        #btnAjouter {
+          position: relative;
+          cursor: pointer;
+          padding: 0; 
+          border: 1px solid #003da1; 
+          border-radius: 10px;       
+          color: #fff;
+          font-size: 15px;
+          font-weight: bold;
+          font-family: Arial, sans-serif;
+          width: 75px;
+          height: 41px;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+          
+          box-shadow:
+            inset 0px 4px 4px -3px #fff8, /* Reflet blanc haut plus visible */
+            inset 0px -3px 4px -3px #fff;
+            
+          /* COUPURE NETTE À 50% : Du bleu très clair vers ton bleu, puis cassure vers le bleu sombre */
+          background: linear-gradient(#b3d7ff, #007aff 50%, #004b75 50%);
+          
+          isolation: isolate;
+          transition: 0.25s all, 0.1s background-position;
+          
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Illumination turquoise par le bas au survol */
+        #btnAjouter::after {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          inset: 0;
+          border-radius: 9px;
+          background: radial-gradient(circle at 50% 150%, #48b9ef, #0000 50%);
+          background-size: 300% 50%;
+          background-position: 50% 100%;
+          background-repeat: no-repeat;
+          opacity: 0;
+          transition: inherit;
+        }
+
+        /* Illumination turquoise par le haut au survol */
+        #btnAjouter::before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          inset: 0;
+          border-radius: 9px;
+          background: radial-gradient(circle at 50% 320%, #48b9ef, #0000 50%);
+          background-size: 300% 50%;
+          background-position: 50% 0%;
+          background-repeat: no-repeat;
+          opacity: 0;
+          transition: inherit;
+        }
+
+        #btnAjouter:hover {
+          box-shadow: inset 0px 4px 4px -3px #fff9, inset 0px -3px 4px -3px #fff;
+        }
+        #btnAjouter:hover::before, #btnAjouter:hover::after { opacity: 1; }
+        #btnAjouter:active::before, #btnAjouter:active::after { opacity: 0; }
+
+        /* Clic enfoncé */
+        #btnAjouter:active {
+          box-shadow:
+            inset 0px 4px 4px -3px #000,
+            inset 0px -4px 4px -3px #000c,
+            inset 0px 0px 24px -3px #000a;
+          background-position: 1px 1px;
+        }
+
+        #btnAjouter div { transition: 0.1s translate; }
+        #btnAjouter:active div { translate: 1px 1px; }
+
+
+        /* LA ZONE DE LISTE SCROLLABLE */
+        #liste {
+            text-align: left;
+            margin-top: 10px;
+            flex: 1; 
+            overflow-y: auto; 
+            padding-right: 5px; 
+        }
+
+        #liste::-webkit-scrollbar {
+            width: 4px;
+        }
+        #liste::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        /* Une tâche (Ligne Flexbox) */
+        .tache {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin: 0 0 10px 0; 
+            gap: 10px;
+            
+            background-color: rgba(255, 255, 255, 0.40); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            padding: 10px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .tache:hover {
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
+        }
+
+        .tache span {
+            flex-grow: 1; 
+        }      
+
+        .date-tache {
+            font-size: 13px;       
+            color: #007aff;       
+            font-weight: bold;     
+        }
+
+
+        /* BOUTON SUPPRIMER - EFFET PLASTIQUE REHAUSSÉ */
+        .btn-supprimer {
+          position: relative;
+          cursor: pointer;
+          padding: 6px 12px;
+          border: 1px solid #5a0000; 
+          border-radius: 6px;       
+          color: #fff;
+          font-size: 12px;
+          font-weight: bold;
+          font-family: Arial, sans-serif;
+          width: auto;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+          
+          box-shadow:
+            inset 0px 4px 4px -3px #fffa, /* Reflet blanc haut plus visible */
+            inset 0px -3px 4px -3px #fff;
+            
+          /* COUPURE NETTE À 50% : Du rouge clair au rouge pur, puis cassure vers le rouge sombre */
+          background: linear-gradient(#ffb3b3, #ff2b2b 50%, #990000 50%);
+          
+          isolation: isolate;
+          transition: 0.25s all, 0.1s background-position;
+          
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .btn-supprimer::after {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          inset: 0;
+          border-radius: 5px;
+          background: radial-gradient(circle at 50% 150%, #ff8080, #0000 50%);
+          background-size: 300% 50%;
+          background-position: 50% 100%;
+          background-repeat: no-repeat;
+          opacity: 0;
+          transition: inherit;
+        }
+        .btn-supprimer::before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          inset: 0;
+          border-radius: 5px;
+          background: radial-gradient(circle at 50% 320%, #ff8080, #0000 50%);
+          background-size: 300% 50%;
+          background-position: 50% 0%;
+          background-repeat: no-repeat;
+          opacity: 0;
+          transition: inherit;
+        }
+
+        .btn-supprimer:hover {
+          box-shadow: inset 0px 4px 4px -3px #fff9, inset 0px -3px 4px -3px #fff;
+        }
+        .btn-supprimer:hover::before, .btn-supprimer:hover::after { opacity: 1; }
+        .btn-supprimer:active::before, .btn-supprimer:active::after { opacity: 0; }
+
+        .btn-supprimer:active {
+          box-shadow: inset 0px 4px 4px -3px #000, inset 0px -4px 4px -3px #000c, inset 0px 0px 24px -3px #000a;
+          background-position: 1px 1px;
+        }
+        .btn-supprimer div { transition: 0.1s translate; }
+        .btn-supprimer:active div { translate: 1px 1px; }
+
+
+        /* Si la case est cochée, on barre le texte et la date */
+        .tache input[type="checkbox"]:checked + .contenu-tache {
+            text-decoration: line-through;
+            color: #707070;
+            font-style: italic;
+        }
+
+        .tache input[type="checkbox"]:checked + .contenu-tache .date-tache {
+            color: #707070;
+        }
+    </style>
+</head>
+
+<body>
+<div class="iphone">
+    <div class="barre-haut"></div>
+
+    <h1>Ma liste de Taches</h1>
+
+    <div class="zone-saisie">
+        <input type="text" id="inputTache" class="champ-saisie" placeholder="Écris une tâche">
+        <input type="date" id="inputDate" class="champ-saisie">
+        <button id="btnAjouter"><div>Ajouter</div></button>
+    </div>
+
+    <div id="liste"></div>
+</div>
+
+<script>
+window.addEventListener("DOMContentLoaded", function() {
+    
+    // Chargement initial des tâches sauvegardées
+    let tachesData = JSON.parse(localStorage.getItem("mesTachesData")) || [];
+    
+    let boutonAjouter = document.getElementById("btnAjouter");
+    let inputTache = document.getElementById("inputTache");
+    let inputDate = document.getElementById("inputDate");
+    
+    function sauvegarder EtAfficher() {
+        localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
+        afficherTaches();
+    }
+
+    boutonAjouter.addEventListener("click", function() {
+        let texte = inputTache.value;
+        let dateChoisie = inputDate.value;
+
+        if (texte.trim() === "") return;
+
+        // Si aucune date n'est choisie, on lui met une date lointaine (9999) pour qu'elle aille à la fin du tri
+        let cleDate = dateChoisie !== "" ? dateChoisie : "9999-12-31";
+
+        tachesData.push({
+            id: Date.now(),
+            texte: texte,
+            date: dateChoisie,
+            cleTri: cleDate,
+            cochee: false
+        });
+
+        sauvegarderEtAfficher();
+        
+        inputTache.value = "";
+        inputDate.value = "";
+    });
+
+    function afficherTaches() {
+        let zone = document.getElementById("liste");
+        zone.innerHTML = "";
+
+        // Tri automatique : par date chronologique
+        tachesData.sort((a, b) => a.cleTri.localeCompare(b.cleTri));
+
+        tachesData.forEach((tache) => {
+            let bloc = document.createElement("div");
+            bloc.className = "tache";
+
+            let dateFormatee = "";
+            if (tache.date && tache.date !== "") {
+                let options = { day: 'numeric', month: 'short' };
+                dateFormatee = new Date(tache.date + "T00:00:00").toLocaleDateString('fr-CA', options) + " : ";
+            }
+
+            bloc.innerHTML = `
+                <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
+                <span class="contenu-tache">
+                    <span class="date-tache">${dateFormatee}</span>
+                    <span class="texte-tache">${tache.texte}</span>
+                </span>
+                <button class="btn-supprimer"><div>Supprimer</div></button>
+            `;
+
+            // Événement pour cocher/décocher
+            let checkbox = bloc.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener("change", function() {
+                tache.cochee = checkbox.checked;
+                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
+            });
+
+            // Événement pour supprimer
+            bloc.querySelector(".btn-supprimer").addEventListener("click", function() {
+                tachesData = tachesData.filter(t => t.id !== tache.id);
+                sauvegarderEtAfficher();
+            });
+
+            zone.appendChild(bloc);
+        });
+    }
+
+    // Affichage au démarrage
+    afficherTaches();
+});
+</script>
+
+</body>
+</html>
