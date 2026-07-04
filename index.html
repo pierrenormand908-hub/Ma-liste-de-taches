@@ -393,15 +393,14 @@ window.addEventListener("DOMContentLoaded", function() {
                 dateFormatee = new Date(tache.date + "T00:00:00").toLocaleDateString('fr-CA', options) + " : ";
             }
 
-            bloc.innerHTML = `
+           bloc.innerHTML = `
                 <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
-                <span class="contenu-tache">
-                    <span class="date-tache">${dateFormatee}</span>
-                    <span class="texte-tache">${tache.texte}</span>
+                <span class="contenu-tache" style="display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px;">
+                    <span class="date-tache" style="font-size: 12px; margin-bottom: 2px;">${dateFormatee}</span>
+                    <span class="texte-tache" style="font-size: 16px; font-weight: 500; color: #333;">${tache.texte}</span>
                 </span>
                 <button class="btn-supprimer"><div>Supprimer</div></button>
             `;
-
             // Événement pour cocher/décocher
             let checkbox = bloc.querySelector('input[type="checkbox"]');
             checkbox.addEventListener("change", function() {
