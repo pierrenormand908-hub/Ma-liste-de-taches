@@ -331,7 +331,7 @@ body {
 
     <div class="zone-saisie">
         <input type="text" id="inputTache" class="champ-saisie" placeholder="Écris une tâche">
-        <input type="date" id="inputDate" class="champ-saisie">
+       <input type="datetime-local" id="inputDate" class="champ-saisie">
         <button id="btnAjouter"><div>Ajouter</div></button>
     </div>
 
@@ -387,12 +387,23 @@ window.addEventListener("DOMContentLoaded", function() {
             let bloc = document.createElement("div");
             bloc.className = "tache";
 
-            let dateFormatee = "";
+          let dateFormatee = "";
             if (tache.date && tache.date !== "") {
-                let options = { day: 'numeric', month: 'short' };
-                dateFormatee = new Date(tache.date + "T00:00:00").toLocaleDateString('fr-CA', options) + " : ";
+                // Crée un objet date avec ce que tu as choisi
+                let dateChoisie = new Date(tache.date);
+                
+                // Formate le jour et le mois (ex: 6 juin)
+                let optionsDate = { day: 'numeric', month: 'short' };
+                let jourMois = dateChoisie.toLocaleDateString('fr-CA', optionsDate);
+                
+                // Formate l'heure (ex: 14:25)
+                let optionsHeure = { hour: '2-digit', minute: '2-digit' };
+                let heureMinutes = dateChoisie.toLocaleTimeString('fr-CA', optionsHeure);
+                
+                dateFormatee = jourMois + " à " + heureMinutes;
+            } else {
+                dateFormatee = "Pas de moment prévu";
             }
-
            bloc.innerHTML = `
                 <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
                 <span class="contenu-tache" style="display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px;">
