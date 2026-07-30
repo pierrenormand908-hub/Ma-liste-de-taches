@@ -313,7 +313,7 @@ h1 {
 
     <h1>Ma liste de Taches</h1>
 
-    <button id="btnNotif">🔔 Activer les rappels</button>
+   <button id="btnNotif" onclick="demanderPermissionNotif()">🔔 Activer les rappels</button>
 
     <div class="zone-saisie">
         <input type="text" id="inputTache" class="champ-saisie" placeholder="Écris une tâche">
@@ -340,21 +340,25 @@ window.addEventListener("DOMContentLoaded", function () {
         if (btn) btn.style.display = "none";
     }
 
-    // 2. Demander la permission pour les notifications iOS
-    window.demanderPermissionNotif = async function () {
-        if ("Notification" in window) {
-            const permission = await Notification.requestPermission();
+// 2. Demander la permission pour les notifications iOS
+    window.demanderPermissionNotif = function () {
+        if (!("Notification" in window)) {
+            alert("Ajoute d'abord l'application sur ton écran d'accueil via Safari.");
+            return;
+        }
+
+        Notification.requestPermission().then(function (permission) {
             if (permission === "granted") {
                 alert("Rappels activés avec succès !");
                 localStorage.setItem("rappelsActives", "true");
                 let btn = document.getElementById("btnNotif");
                 if (btn) btn.style.display = "none";
-            } else {
-                alert("Permission refusée dans Safari.");
+            } else if (permission === "denied") {
+                alert("Permission refusée. Vérifie dans Réglages > Notifications > Ton App.");
             }
-        } else {
-            alert("Ajoute d'abord l'application sur ton écran d'accueil via Safari.");
-        }
+        }).catch(function (err) {
+            alert("Erreur : " + err);
+        });
     };
 
     // Chargement des tâches
