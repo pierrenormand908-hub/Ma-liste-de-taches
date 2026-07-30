@@ -327,23 +327,23 @@ h1 {
 <script>
 window.addEventListener("DOMContentLoaded", function () {
 
-    // Enregistrement du Service Worker pour les notifications en arrière-plan
+    // Enregistrement du Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
             .then(reg => console.log('Service Worker prêt !'))
             .catch(err => console.log('Erreur Service Worker :', err));
     }
 
-    // 1. Masquer le bouton si les rappels ont déjà été activés
+    // 1. Masquer le bouton si déjà activé
     if (localStorage.getItem("rappelsActives") === "true") {
         let btn = document.getElementById("btnNotif");
         if (btn) btn.style.display = "none";
     }
 
-// 2. Demander la permission pour les notifications iOS
+    // 2. Permission des notifications iOS
     window.demanderPermissionNotif = function () {
         if (!("Notification" in window)) {
-            alert("Ajoute d'abord l'application sur ton écran d'accueil via Safari.");
+            alert("Ajoute d'abord l'app sur l'écran d'accueil via Safari.");
             return;
         }
 
@@ -354,14 +354,11 @@ window.addEventListener("DOMContentLoaded", function () {
                 let btn = document.getElementById("btnNotif");
                 if (btn) btn.style.display = "none";
             } else if (permission === "denied") {
-                alert("Permission refusée. Vérifie dans Réglages > Notifications > Ton App.");
+                alert("Permission refusée. Vérifie dans Réglages > Notifications.");
             }
-        }).catch(function (err) {
-            alert("Erreur : " + err);
         });
     };
 
-    // Chargement des tâches
     let tachesData = JSON.parse(localStorage.getItem("mesTachesData")) || [];
 
     let boutonAjouter = document.getElementById("btnAjouter");
@@ -373,7 +370,7 @@ window.addEventListener("DOMContentLoaded", function () {
         afficherTaches();
     }
 
-    // Programmer la notification via le Service Worker
+    // Programmer une notification Web
     function programmerNotifNative(id, texte, dateIso) {
         if ("Notification" in window && Notification.permission === "granted") {
             let dateCible = new Date(dateIso).getTime();
@@ -381,7 +378,6 @@ window.addEventListener("DOMContentLoaded", function () {
             let delai = dateCible - maintenant;
 
             if (delai > 0 && navigator.serviceWorker.controller) {
-                // Envoie l'ordre au Service Worker qui gère l'arrière-plan
                 navigator.serviceWorker.controller.postMessage({
                     type: 'PROGRAMMER_NOTIF',
                     id: id,
@@ -390,6 +386,26 @@ window.addEventListener("DOMContentLoaded", function () {
                 });
             }
         }
+    }
+
+    // Vérifier les rappels manqués pendant que l'app était fermée
+    function verifierRappelsRates() {
+        let maintenant = new Date().getTime();
+        tachesData.forEach(tache => {
+            if (tache.date && !tache.cochee && !tache.notifiee) {
+                let dateTache = new Date(tache.date).getTime();
+                if (maintenant >= dateTache) {
+                    // Afficher la notification à l'ouverture
+                    if ("Notification" in window && Notification.permission === "granted") {
+                        new Notification("Rappel manqué !", {
+                            body: tache.texte
+                        });
+                    }
+                    tache.notifiee = true; // Évite de re-notifier à chaque ouverture
+                }
+            }
+        });
+        localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
     }
 
     boutonAjouter.addEventListener("click", function () {
@@ -406,7 +422,8 @@ window.addEventListener("DOMContentLoaded", function () {
             texte: texte,
             date: dateChoisie,
             cleTri: cleDate,
-            cochee: false
+            cochee: false,
+            notifiee: false
         };
 
         tachesData.push(nouvelleTache);
@@ -431,8 +448,13 @@ window.addEventListener("DOMContentLoaded", function () {
             bloc.className = "tache";
 
             let dateFormatee = "";
+            let estEnRetard = false;
+
             if (tache.date && tache.date !== "") {
                 let dateChoisie = new Date(tache.date);
+                if (dateChoisie.getTime() < Date.now() && !tache.cochee) {
+                    estEnRetard = true;
+                }
                 let optionsDate = { day: 'numeric', month: 'short' };
                 let jourMois = dateChoisie.toLocaleDateString('fr-CA', optionsDate);
                 let optionsHeure = { hour: '2-digit', minute: '2-digit' };
@@ -446,7 +468,9 @@ window.addEventListener("DOMContentLoaded", function () {
             bloc.innerHTML = `
                 <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
                 <span class="contenu-tache" style="display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px;">
-                    <span class="date-tache" style="font-size: 12px; margin-bottom: 2px;">${dateFormatee}</span>
+                    <span class="date-tache" style="font-size: 12px; margin-bottom: 2px; ${estEnRetard ? 'color: #d9534f; font-weight: bold;' : ''}">
+                        ${dateFormatee} ${estEnRetard ? '⚠️ (Échue)' : ''}
+                    </span>
                     <span class="texte-tache" style="font-size: 16px; font-weight: 500; color: #333;">${tache.texte}</span>
                 </span>
                 <button class="btn-supprimer"><div>Supprimer</div></button>
@@ -456,6 +480,7 @@ window.addEventListener("DOMContentLoaded", function () {
             checkbox.addEventListener("change", function () {
                 tache.cochee = checkbox.checked;
                 localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
+                afficherTaches();
             });
 
             bloc.querySelector(".btn-supprimer").addEventListener("click", function () {
@@ -467,7 +492,9 @@ window.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Lancement au démarrage
     afficherTaches();
+    verifierRappelsRates();
 });
 </script>
 </body>
