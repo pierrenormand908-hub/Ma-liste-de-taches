@@ -325,108 +325,93 @@ h1 {
 </div>
 
 <script>
-window.addEventListener("DOMContentLoaded", function() {
-    
+window.addEventListener("DOMContentLoaded", function () {
+
+    // Enregistrement du Service Worker pour les notifications en arrière-plan
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker prêt !'))
+            .catch(err => console.log('Erreur Service Worker :', err));
+    }
+
+    // 1. Masquer le bouton si les rappels ont déjà été activés
+    if (localStorage.getItem("rappelsActives") === "true") {
+        let btn = document.getElementById("btnNotif");
+        if (btn) btn.style.display = "none";
+    }
+
+    // 2. Demander la permission pour les notifications iOS
+    window.demanderPermissionNotif = async function () {
+        if ("Notification" in window) {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                alert("Rappels activés avec succès !");
+                localStorage.setItem("rappelsActives", "true");
+                let btn = document.getElementById("btnNotif");
+                if (btn) btn.style.display = "none";
+            } else {
+                alert("Permission refusée dans Safari.");
+            }
+        } else {
+            alert("Ajoute d'abord l'application sur ton écran d'accueil via Safari.");
+        }
+    };
+
+    // Chargement des tâches
     let tachesData = JSON.parse(localStorage.getItem("mesTachesData")) || [];
-    
+
     let boutonAjouter = document.getElementById("btnAjouter");
     let inputTache = document.getElementById("inputTache");
     let inputDate = document.getElementById("inputDate");
-    let btnNotif = document.getElementById("btnNotif");
-
-    // --- GESTION DES NOTIFICATIONS ---
-    
-    // Demande de permission
-    btnNotif.addEventListener("click", function() {
-        if ("Notification" in window) {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    btnNotif.innerText = "🔔 Rappels activés";
-                    btnNotif.style.color = "#28a745";
-                    btnNotif.style.borderColor = "#28a745";
-                } else {
-                    alert("Les notifications ont été refusées dans ton navigateur.");
-                }
-            });
-        } else {
-            alert("Ce navigateur ne supporte pas les notifications Web.");
-        }
-    });
-
-    function envoyerNotification(titre, message) {
-        if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(titre, {
-                body: message,
-                icon: "Taches.png"
-            });
-        }
-    }
-
-    // Vérification automatique des tâches
-    function verifierRappels() {
-        if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-        let maintenant = new Date();
-        let aujourdhuiStr = maintenant.toISOString().split("T")[0]; // AAAA-MM-JJ
-        let heureActuelle = maintenant.getHours();
-        let minuteActuelle = maintenant.getMinutes();
-
-        // On crée la date de demain en format ISO AAAA-MM-JJ
-        let demain = new Date(maintenant);
-        demain.setDate(demain.getDate() + 1);
-        let demainStr = demain.toISOString().split("T")[0];
-
-        tachesData.forEach(tache => {
-            if (tache.cochee || !tache.date) return;
-
-            let dateTacheStr = tache.date.split("T")[0]; // Extraire la date AAAA-MM-JJ
-
-            // 1. Notification de la VEILLE (déclenchée à 20:00 la veille)
-            if (dateTacheStr === demainStr && heureActuelle === 20 && minuteActuelle === 0 && !tache.notifieVeille) {
-                envoyerNotification("Liste de taches", `Oublie pas demain tu dois : ${tache.texte}`);
-                tache.notifieVeille = true;
-                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
-            }
-
-            // 2. Notification du MATIN MÊME (déclenchée à 06:00 le jour même)
-            if (dateTacheStr === aujourdhuiStr && heureActuelle === 6 && minuteActuelle === 0 && !tache.notifieMatin) {
-                envoyerNotification("Liste de taches", `Oublie pas ce matin tu dois : ${tache.texte}`);
-                tache.notifieMatin = true;
-                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
-            }
-        });
-    }
-
-    // On vérifie les tâches toutes les minutes (60 000 ms)
-    setInterval(verifierRappels, 60000);
-
-    // --- FIN GESTION NOTIFICATIONS ---
 
     function sauvegarderEtAfficher() {
         localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
         afficherTaches();
     }
 
-    boutonAjouter.addEventListener("click", function() {
+    // Programmer la notification via le Service Worker
+    function programmerNotifNative(id, texte, dateIso) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            let dateCible = new Date(dateIso).getTime();
+            let maintenant = new Date().getTime();
+            let delai = dateCible - maintenant;
+
+            if (delai > 0 && navigator.serviceWorker.controller) {
+                // Envoie l'ordre au Service Worker qui gère l'arrière-plan
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PROGRAMMER_NOTIF',
+                    id: id,
+                    texte: texte,
+                    delai: delai
+                });
+            }
+        }
+    }
+
+    boutonAjouter.addEventListener("click", function () {
         let texte = inputTache.value;
         let dateChoisie = inputDate.value;
 
         if (texte.trim() === "") return;
 
+        let idUnique = Date.now();
         let cleDate = dateChoisie !== "" ? dateChoisie : "9999-12-31";
 
-        tachesData.push({
-            id: Date.now(),
+        let nouvelleTache = {
+            id: idUnique,
             texte: texte,
             date: dateChoisie,
             cleTri: cleDate,
-            cochee: false,
-            notifieVeille: false, // Suivi pour ne pas notifier deux fois
-            notifieMatin: false
-        });
+            cochee: false
+        };
 
+        tachesData.push(nouvelleTache);
         sauvegarderEtAfficher();
-        
+
+        if (dateChoisie !== "") {
+            programmerNotifNative(idUnique, texte, dateChoisie);
+        }
+
         inputTache.value = "";
         inputDate.value = "";
     });
@@ -448,7 +433,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 let jourMois = dateChoisie.toLocaleDateString('fr-CA', optionsDate);
                 let optionsHeure = { hour: '2-digit', minute: '2-digit' };
                 let heureMinutes = dateChoisie.toLocaleTimeString('fr-CA', optionsHeure);
-                
+
                 dateFormatee = jourMois + " à " + heureMinutes;
             } else {
                 dateFormatee = "Pas de moment prévu";
@@ -464,12 +449,12 @@ window.addEventListener("DOMContentLoaded", function() {
             `;
 
             let checkbox = bloc.querySelector('input[type="checkbox"]');
-            checkbox.addEventListener("change", function() {
+            checkbox.addEventListener("change", function () {
                 tache.cochee = checkbox.checked;
                 localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
             });
 
-            bloc.querySelector(".btn-supprimer").addEventListener("click", function() {
+            bloc.querySelector(".btn-supprimer").addEventListener("click", function () {
                 tachesData = tachesData.filter(t => t.id !== tache.id);
                 sauvegarderEtAfficher();
             });
@@ -481,6 +466,5 @@ window.addEventListener("DOMContentLoaded", function() {
     afficherTaches();
 });
 </script>
-
 </body>
 </html>
