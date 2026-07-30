@@ -23,7 +23,7 @@ body {
 /* L'application prend de force tout l'écran de l'iPhone */
 .iphone {
     width: 100%;
-    height: 100%; /* Occupe 100% de la hauteur de l'appareil */
+    height: 100%;
     margin: 0;
     
     /* Image de fond */
@@ -34,292 +34,276 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     
-    /* On retire les bordures arrondies extérieures pour le plein écran mobile */
     border-radius: 0; 
-    
-    /* Espace de 75px en haut pour laisser passer l'encoche (Dynamic Island) */
-    padding: 100px 20px 30px 20px; 
+    padding: 60px 20px 30px 20px; 
     box-sizing: border-box;
     position: relative;
     
     display: flex;
     flex-direction: column;
 }
-       /* Titre en ORANGE */
-        h1 {
-            text-align: center;
-            color: #e66400; /* Orange plus foncé et riche */
-            margin-bottom: 20px;
-            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4); /* Ombre prononcée pour l'effet surélevé */
-        }
 
-        /* Conteneur pour ranger la saisie sur une seule ligne */
-        .zone-saisie {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
-        /* Style de base pour les deux rectangles de texte et date */
-        .champ-saisie {
-            padding: 10px;
-            font-size: 15px;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            box-sizing: border-box; 
-            height: 41px; 
-        }
+/* Titre en ORANGE */
+h1 {
+    text-align: center;
+    color: #e66400;
+    margin-bottom: 10px;
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4);
+}
 
-        /* Largeurs spécifiques pour que tout entre sur la même ligne */
-        #inputTache {
-            flex-grow: 2; 
-            width: 130px;
-            font-size: 15px;
-        }
+/* Bouton pour activer les notifications */
+#btnNotif {
+    background: rgba(0, 122, 255, 0.15);
+    border: 1px solid #007aff;
+    color: #007aff;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 auto 15px auto;
+    display: block;
+}
 
-        /* Transforme le champ en un joli petit carré avec une icône de calendrier */
-        #inputDate {
-            width: 45px; 
-            cursor: pointer;
-            background-color: white;
-            
-            /* Ajoute l'icône de calendrier en arrière-plan */
-            background-image: url('https://cdn-icons-png.flaticon.com/512/747/747310.png');
-            background-size: 22px; 
-            background-repeat: no-repeat;
-            background-position: center;
-            
-            /* Cache le texte du navigateur à l'intérieur du carré */
-            color: transparent;
-        }
+/* Conteneur pour ranger la saisie sur une seule ligne */
+.zone-saisie {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
 
-        /* Force le texte à rester invisible même quand on choisit une date */
-        #inputDate::-webkit-datetime-edit {
-            color: transparent;
-        }
+.champ-saisie {
+    padding: 10px;
+    font-size: 15px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-sizing: border-box; 
+    height: 41px; 
+}
 
-        /* Effet lumineux bleu quand on clique dans un champ */
-        .champ-saisie:focus {
-            border-color: #007aff;
-            outline: none;
-            box-shadow: 0 0 8px rgba(0, 122, 255, 0.3);
-        }
+#inputTache {
+    flex-grow: 2; 
+    width: 130px;
+    font-size: 15px;
+}
 
-        /* LE BOUTON AJOUTER - EFFET PLASTIQUE REHAUSSÉ */
-        #btnAjouter {
-          position: relative;
-          cursor: pointer;
-          padding: 0; 
-          border: 1px solid #003da1; 
-          border-radius: 10px;       
-          color: #fff;
-          font-size: 15px;
-          font-weight: bold;
-          font-family: Arial, sans-serif;
-          width: 75px;
-          height: 41px;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-          
-          box-shadow:
-            inset 0px 4px 4px -3px #fff8, /* Reflet blanc haut plus visible */
-            inset 0px -3px 4px -3px #fff;
-            
-          /* COUPURE NETTE À 50% : Du bleu très clair vers ton bleu, puis cassure vers le bleu sombre */
-          background: linear-gradient(#b3d7ff, #007aff 50%, #004b75 50%);
-          
-          isolation: isolate;
-          transition: 0.25s all, 0.1s background-position;
-          
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+#inputDate {
+    width: 45px; 
+    cursor: pointer;
+    background-color: white;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/747/747310.png');
+    background-size: 22px; 
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+}
 
-        /* Illumination turquoise par le bas au survol */
-        #btnAjouter::after {
-          content: "";
-          position: absolute;
-          z-index: -1;
-          inset: 0;
-          border-radius: 9px;
-          background: radial-gradient(circle at 50% 150%, #48b9ef, #0000 50%);
-          background-size: 300% 50%;
-          background-position: 50% 100%;
-          background-repeat: no-repeat;
-          opacity: 0;
-          transition: inherit;
-        }
+#inputDate::-webkit-datetime-edit {
+    color: transparent;
+}
 
-        /* Illumination turquoise par le haut au survol */
-        #btnAjouter::before {
-          content: "";
-          position: absolute;
-          z-index: -1;
-          inset: 0;
-          border-radius: 9px;
-          background: radial-gradient(circle at 50% 320%, #48b9ef, #0000 50%);
-          background-size: 300% 50%;
-          background-position: 50% 0%;
-          background-repeat: no-repeat;
-          opacity: 0;
-          transition: inherit;
-        }
+.champ-saisie:focus {
+    border-color: #007aff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 122, 255, 0.3);
+}
 
-        #btnAjouter:hover {
-          box-shadow: inset 0px 4px 4px -3px #fff9, inset 0px -3px 4px -3px #fff;
-        }
-        #btnAjouter:hover::before, #btnAjouter:hover::after { opacity: 1; }
-        #btnAjouter:active::before, #btnAjouter:active::after { opacity: 0; }
+/* LE BOUTON AJOUTER */
+#btnAjouter {
+    position: relative;
+    cursor: pointer;
+    padding: 0; 
+    border: 1px solid #003da1; 
+    border-radius: 10px;       
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    width: 75px;
+    height: 41px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    box-shadow:
+        inset 0px 4px 4px -3px #fff8,
+        inset 0px -3px 4px -3px #fff;
+    background: linear-gradient(#b3d7ff, #007aff 50%, #004b75 50%);
+    isolation: isolate;
+    transition: 0.25s all, 0.1s background-position;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        /* Clic enfoncé */
-        #btnAjouter:active {
-          box-shadow:
-            inset 0px 4px 4px -3px #000,
-            inset 0px -4px 4px -3px #000c,
-            inset 0px 0px 24px -3px #000a;
-          background-position: 1px 1px;
-        }
+#btnAjouter::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: 9px;
+    background: radial-gradient(circle at 50% 150%, #48b9ef, #0000 50%);
+    background-size: 300% 50%;
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: inherit;
+}
 
-        #btnAjouter div { transition: 0.1s translate; }
-        #btnAjouter:active div { translate: 1px 1px; }
+#btnAjouter::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: 9px;
+    background: radial-gradient(circle at 50% 320%, #48b9ef, #0000 50%);
+    background-size: 300% 50%;
+    background-position: 50% 0%;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: inherit;
+}
 
+#btnAjouter:hover {
+    box-shadow: inset 0px 4px 4px -3px #fff9, inset 0px -3px 4px -3px #fff;
+}
+#btnAjouter:hover::before, #btnAjouter:hover::after { opacity: 1; }
+#btnAjouter:active::before, #btnAjouter:active::after { opacity: 0; }
 
-        /* LA ZONE DE LISTE SCROLLABLE */
-        #liste {
-            text-align: left;
-            margin-top: 10px;
-            flex: 1; 
-            overflow-y: auto; 
-            padding-right: 5px; 
-        }
+#btnAjouter:active {
+    box-shadow:
+        inset 0px 4px 4px -3px #000,
+        inset 0px -4px 4px -3px #000c,
+        inset 0px 0px 24px -3px #000a;
+    background-position: 1px 1px;
+}
 
-        #liste::-webkit-scrollbar {
-            width: 4px;
-        }
-        #liste::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
+#btnAjouter div { transition: 0.1s translate; }
+#btnAjouter:active div { translate: 1px 1px; }
 
-        /* Une tâche (Ligne Flexbox) */
-        .tache {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            margin: 0 0 10px 0; 
-            gap: 10px;
-            
-            background-color: rgba(255, 255, 255, 0.40); 
-            backdrop-filter: blur(8px); 
-            -webkit-backdrop-filter: blur(8px);
-            padding: 10px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            box-sizing: border-box;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+/* LA ZONE DE LISTE SCROLLABLE */
+#liste {
+    text-align: left;
+    margin-top: 10px;
+    flex: 1; 
+    overflow-y: auto; 
+    padding-right: 5px; 
+}
 
-        .tache:hover {
-            transform: translateY(-3px); 
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
-        }
+#liste::-webkit-scrollbar {
+    width: 4px;
+}
+#liste::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
 
-        .tache span {
-            flex-grow: 1; 
-        }      
+.tache {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 0 10px 0; 
+    gap: 10px;
+    background-color: rgba(255, 255, 255, 0.40); 
+    backdrop-filter: blur(8px); 
+    -webkit-backdrop-filter: blur(8px);
+    padding: 10px; 
+    border-radius: 12px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-        .date-tache {
-            font-size: 13px;       
-            color: #007aff;       
-            font-weight: bold;     
-        }
+.tache:hover {
+    transform: translateY(-3px); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
+}
 
+.tache span {
+    flex-grow: 1; 
+}      
 
-        /* BOUTON SUPPRIMER - EFFET PLASTIQUE REHAUSSÉ */
-        .btn-supprimer {
-          position: relative;
-          cursor: pointer;
-          padding: 6px 12px;
-          border: 1px solid #5a0000; 
-          border-radius: 6px;       
-          color: #fff;
-          font-size: 12px;
-          font-weight: bold;
-          font-family: Arial, sans-serif;
-          width: auto;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-          
-          box-shadow:
-            inset 0px 4px 4px -3px #fffa, /* Reflet blanc haut plus visible */
-            inset 0px -3px 4px -3px #fff;
-            
-          /* COUPURE NETTE À 50% : Du rouge clair au rouge pur, puis cassure vers le rouge sombre */
-          background: linear-gradient(#ffb3b3, #ff2b2b 50%, #990000 50%);
-          
-          isolation: isolate;
-          transition: 0.25s all, 0.1s background-position;
-          
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+.date-tache {
+    font-size: 13px;       
+    color: #007aff;       
+    font-weight: bold;     
+}
 
-        .btn-supprimer::after {
-          content: "";
-          position: absolute;
-          z-index: -1;
-          inset: 0;
-          border-radius: 5px;
-          background: radial-gradient(circle at 50% 150%, #ff8080, #0000 50%);
-          background-size: 300% 50%;
-          background-position: 50% 100%;
-          background-repeat: no-repeat;
-          opacity: 0;
-          transition: inherit;
-        }
-        .btn-supprimer::before {
-          content: "";
-          position: absolute;
-          z-index: -1;
-          inset: 0;
-          border-radius: 5px;
-          background: radial-gradient(circle at 50% 320%, #ff8080, #0000 50%);
-          background-size: 300% 50%;
-          background-position: 50% 0%;
-          background-repeat: no-repeat;
-          opacity: 0;
-          transition: inherit;
-        }
+.btn-supprimer {
+    position: relative;
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 1px solid #5a0000; 
+    border-radius: 6px;       
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    width: auto;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    box-shadow:
+        inset 0px 4px 4px -3px #fffa,
+        inset 0px -3px 4px -3px #fff;
+    background: linear-gradient(#ffb3b3, #ff2b2b 50%, #990000 50%);
+    isolation: isolate;
+    transition: 0.25s all, 0.1s background-position;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .btn-supprimer:hover {
-          box-shadow: inset 0px 4px 4px -3px #fff9, inset 0px -3px 4px -3px #fff;
-        }
-        .btn-supprimer:hover::before, .btn-supprimer:hover::after { opacity: 1; }
-        .btn-supprimer:active::before, .btn-supprimer:active::after { opacity: 0; }
+.btn-supprimer::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: 5px;
+    background: radial-gradient(circle at 50% 150%, #ff8080, #0000 50%);
+    background-size: 300% 50%;
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: inherit;
+}
+.btn-supprimer::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: 5px;
+    background: radial-gradient(circle at 50% 320%, #ff8080, #0000 50%);
+    background-size: 300% 50%;
+    background-position: 50% 0%;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: inherit;
+}
 
-        .btn-supprimer:active {
-          box-shadow: inset 0px 4px 4px -3px #000, inset 0px -4px 4px -3px #000c, inset 0px 0px 24px -3px #000a;
-          background-position: 1px 1px;
-        }
-        .btn-supprimer div { transition: 0.1s translate; }
-        .btn-supprimer:active div { translate: 1px 1px; }
+.btn-supprimer:hover {
+    box-shadow: inset 0px 4px 4px -3px #fff9, inset 0px -3px 4px -3px #fff;
+}
+.btn-supprimer:hover::before, .btn-supprimer:hover::after { opacity: 1; }
+.btn-supprimer:active::before, .btn-supprimer:active::after { opacity: 0; }
 
+.btn-supprimer:active {
+    box-shadow: inset 0px 4px 4px -3px #000, inset 0px -4px 4px -3px #000c, inset 0px 0px 24px -3px #000a;
+    background-position: 1px 1px;
+}
+.btn-supprimer div { transition: 0.1s translate; }
+.btn-supprimer:active div { translate: 1px 1px; }
 
-        /* Si la case est cochée, on barre le texte et la date */
-        .tache input[type="checkbox"]:checked + .contenu-tache {
-            text-decoration: line-through;
-            color: #707070;
-            font-style: italic;
-        }
+.tache input[type="checkbox"]:checked + .contenu-tache {
+    text-decoration: line-through;
+    color: #707070;
+    font-style: italic;
+}
 
-        .tache input[type="checkbox"]:checked + .contenu-tache .date-tache {
-            color: #707070;
-        }
+.tache input[type="checkbox"]:checked + .contenu-tache .date-tache {
+    color: #707070;
+}
     </style>
 </head>
 
@@ -329,9 +313,11 @@ body {
 
     <h1>Ma liste de Taches</h1>
 
+    <button id="btnNotif">🔔 Activer les rappels</button>
+
     <div class="zone-saisie">
         <input type="text" id="inputTache" class="champ-saisie" placeholder="Écris une tâche">
-       <input type="datetime-local" id="inputDate" class="champ-saisie">
+        <input type="datetime-local" id="inputDate" class="champ-saisie">
         <button id="btnAjouter"><div>Ajouter</div></button>
     </div>
 
@@ -341,13 +327,81 @@ body {
 <script>
 window.addEventListener("DOMContentLoaded", function() {
     
-    // Chargement initial des tâches sauvegardées
     let tachesData = JSON.parse(localStorage.getItem("mesTachesData")) || [];
     
     let boutonAjouter = document.getElementById("btnAjouter");
     let inputTache = document.getElementById("inputTache");
     let inputDate = document.getElementById("inputDate");
+    let btnNotif = document.getElementById("btnNotif");
+
+    // --- GESTION DES NOTIFICATIONS ---
     
+    // Demande de permission
+    btnNotif.addEventListener("click", function() {
+        if ("Notification" in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    btnNotif.innerText = "🔔 Rappels activés";
+                    btnNotif.style.color = "#28a745";
+                    btnNotif.style.borderColor = "#28a745";
+                } else {
+                    alert("Les notifications ont été refusées dans ton navigateur.");
+                }
+            });
+        } else {
+            alert("Ce navigateur ne supporte pas les notifications Web.");
+        }
+    });
+
+    function envoyerNotification(titre, message) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            new Notification(titre, {
+                body: message,
+                icon: "Taches.png"
+            });
+        }
+    }
+
+    // Vérification automatique des tâches
+    function verifierRappels() {
+        if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+        let maintenant = new Date();
+        let aujourdhuiStr = maintenant.toISOString().split("T")[0]; // AAAA-MM-JJ
+        let heureActuelle = maintenant.getHours();
+        let minuteActuelle = maintenant.getMinutes();
+
+        // On crée la date de demain en format ISO AAAA-MM-JJ
+        let demain = new Date(maintenant);
+        demain.setDate(demain.getDate() + 1);
+        let demainStr = demain.toISOString().split("T")[0];
+
+        tachesData.forEach(tache => {
+            if (tache.cochee || !tache.date) return;
+
+            let dateTacheStr = tache.date.split("T")[0]; // Extraire la date AAAA-MM-JJ
+
+            // 1. Notification de la VEILLE (déclenchée à 20:00 la veille)
+            if (dateTacheStr === demainStr && heureActuelle === 20 && minuteActuelle === 0 && !tache.notifieVeille) {
+                envoyerNotification("Liste de taches", `Oublie pas demain tu dois : ${tache.texte}`);
+                tache.notifieVeille = true;
+                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
+            }
+
+            // 2. Notification du MATIN MÊME (déclenchée à 06:00 le jour même)
+            if (dateTacheStr === aujourdhuiStr && heureActuelle === 6 && minuteActuelle === 0 && !tache.notifieMatin) {
+                envoyerNotification("Liste de taches", `Oublie pas ce matin tu dois : ${tache.texte}`);
+                tache.notifieMatin = true;
+                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
+            }
+        });
+    }
+
+    // On vérifie les tâches toutes les minutes (60 000 ms)
+    setInterval(verifierRappels, 60000);
+
+    // --- FIN GESTION NOTIFICATIONS ---
+
     function sauvegarderEtAfficher() {
         localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
         afficherTaches();
@@ -359,7 +413,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
         if (texte.trim() === "") return;
 
-        // Si aucune date n'est choisie, on lui met une date lointaine (9999) pour qu'elle aille à la fin du tri
         let cleDate = dateChoisie !== "" ? dateChoisie : "9999-12-31";
 
         tachesData.push({
@@ -367,7 +420,9 @@ window.addEventListener("DOMContentLoaded", function() {
             texte: texte,
             date: dateChoisie,
             cleTri: cleDate,
-            cochee: false
+            cochee: false,
+            notifieVeille: false, // Suivi pour ne pas notifier deux fois
+            notifieMatin: false
         });
 
         sauvegarderEtAfficher();
@@ -380,23 +435,17 @@ window.addEventListener("DOMContentLoaded", function() {
         let zone = document.getElementById("liste");
         zone.innerHTML = "";
 
-        // Tri automatique : par date chronologique
         tachesData.sort((a, b) => a.cleTri.localeCompare(b.cleTri));
 
         tachesData.forEach((tache) => {
             let bloc = document.createElement("div");
             bloc.className = "tache";
 
-          let dateFormatee = "";
+            let dateFormatee = "";
             if (tache.date && tache.date !== "") {
-                // Crée un objet date avec ce que tu as choisi
                 let dateChoisie = new Date(tache.date);
-                
-                // Formate le jour et le mois (ex: 6 juin)
                 let optionsDate = { day: 'numeric', month: 'short' };
                 let jourMois = dateChoisie.toLocaleDateString('fr-CA', optionsDate);
-                
-                // Formate l'heure (ex: 14:25)
                 let optionsHeure = { hour: '2-digit', minute: '2-digit' };
                 let heureMinutes = dateChoisie.toLocaleTimeString('fr-CA', optionsHeure);
                 
@@ -404,7 +453,8 @@ window.addEventListener("DOMContentLoaded", function() {
             } else {
                 dateFormatee = "Pas de moment prévu";
             }
-           bloc.innerHTML = `
+
+            bloc.innerHTML = `
                 <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
                 <span class="contenu-tache" style="display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px;">
                     <span class="date-tache" style="font-size: 12px; margin-bottom: 2px;">${dateFormatee}</span>
@@ -412,14 +462,13 @@ window.addEventListener("DOMContentLoaded", function() {
                 </span>
                 <button class="btn-supprimer"><div>Supprimer</div></button>
             `;
-            // Événement pour cocher/décocher
+
             let checkbox = bloc.querySelector('input[type="checkbox"]');
             checkbox.addEventListener("change", function() {
                 tache.cochee = checkbox.checked;
                 localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
             });
 
-            // Événement pour supprimer
             bloc.querySelector(".btn-supprimer").addEventListener("click", function() {
                 tachesData = tachesData.filter(t => t.id !== tache.id);
                 sauvegarderEtAfficher();
@@ -429,7 +478,6 @@ window.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Affichage au démarrage
     afficherTaches();
 });
 </script>
