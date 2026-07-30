@@ -47,22 +47,8 @@ body {
 h1 {
     text-align: center;
     color: #e66400;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-/* Bouton pour activer les notifications */
-#btnNotif {
-    background: rgba(0, 122, 255, 0.15);
-    border: 1px solid #007aff;
-    color: #007aff;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 0 auto 15px auto;
-    display: block;
 }
 
 /* Conteneur pour ranger la saisie sur une seule ligne */
@@ -227,9 +213,9 @@ h1 {
 }      
 
 .date-tache {
-    font-size: 13px;       
-    color: #007aff;       
-    font-weight: bold;     
+    font-size: 13px;        
+    color: #007aff;        
+    font-weight: bold;      
 }
 
 .btn-supprimer {
@@ -237,7 +223,7 @@ h1 {
     cursor: pointer;
     padding: 6px 12px;
     border: 1px solid #5a0000; 
-    border-radius: 6px;       
+    border-radius: 6px;        
     color: #fff;
     font-size: 12px;
     font-weight: bold;
@@ -313,8 +299,6 @@ h1 {
 
     <h1>Ma liste de Taches</h1>
 
-    <button id="btnNotif">🔔 Activer les rappels</button>
-
     <div class="zone-saisie">
         <input type="text" id="inputTache" class="champ-saisie" placeholder="Écris une tâche">
         <input type="datetime-local" id="inputDate" class="champ-saisie">
@@ -332,75 +316,6 @@ window.addEventListener("DOMContentLoaded", function() {
     let boutonAjouter = document.getElementById("btnAjouter");
     let inputTache = document.getElementById("inputTache");
     let inputDate = document.getElementById("inputDate");
-    let btnNotif = document.getElementById("btnNotif");
-
-    // --- GESTION DES NOTIFICATIONS ---
-    
-    // Demande de permission
-    btnNotif.addEventListener("click", function() {
-        if ("Notification" in window) {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    btnNotif.innerText = "🔔 Rappels activés";
-                    btnNotif.style.color = "#28a745";
-                    btnNotif.style.borderColor = "#28a745";
-                } else {
-                    alert("Les notifications ont été refusées dans ton navigateur.");
-                }
-            });
-        } else {
-            alert("Ce navigateur ne supporte pas les notifications Web.");
-        }
-    });
-
-    function envoyerNotification(titre, message) {
-        if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(titre, {
-                body: message,
-                icon: "Taches.png"
-            });
-        }
-    }
-
-    // Vérification automatique des tâches
-    function verifierRappels() {
-        if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-        let maintenant = new Date();
-        let aujourdhuiStr = maintenant.toISOString().split("T")[0]; // AAAA-MM-JJ
-        let heureActuelle = maintenant.getHours();
-        let minuteActuelle = maintenant.getMinutes();
-
-        // On crée la date de demain en format ISO AAAA-MM-JJ
-        let demain = new Date(maintenant);
-        demain.setDate(demain.getDate() + 1);
-        let demainStr = demain.toISOString().split("T")[0];
-
-        tachesData.forEach(tache => {
-            if (tache.cochee || !tache.date) return;
-
-            let dateTacheStr = tache.date.split("T")[0]; // Extraire la date AAAA-MM-JJ
-
-            // 1. Notification de la VEILLE (déclenchée à 20:00 la veille)
-            if (dateTacheStr === demainStr && heureActuelle === 20 && minuteActuelle === 0 && !tache.notifieVeille) {
-                envoyerNotification("Liste de taches", `Oublie pas demain tu dois : ${tache.texte}`);
-                tache.notifieVeille = true;
-                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
-            }
-
-            // 2. Notification du MATIN MÊME (déclenchée à 06:00 le jour même)
-            if (dateTacheStr === aujourdhuiStr && heureActuelle === 6 && minuteActuelle === 0 && !tache.notifieMatin) {
-                envoyerNotification("Liste de taches", `Oublie pas ce matin tu dois : ${tache.texte}`);
-                tache.notifieMatin = true;
-                localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
-            }
-        });
-    }
-
-    // On vérifie les tâches toutes les minutes (60 000 ms)
-    setInterval(verifierRappels, 60000);
-
-    // --- FIN GESTION NOTIFICATIONS ---
 
     function sauvegarderEtAfficher() {
         localStorage.setItem("mesTachesData", JSON.stringify(tachesData));
@@ -420,9 +335,7 @@ window.addEventListener("DOMContentLoaded", function() {
             texte: texte,
             date: dateChoisie,
             cleTri: cleDate,
-            cochee: false,
-            notifieVeille: false, // Suivi pour ne pas notifier deux fois
-            notifieMatin: false
+            cochee: false
         });
 
         sauvegarderEtAfficher();
