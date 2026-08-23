@@ -104,7 +104,7 @@ h1 {
     cursor: pointer;
     padding: 0; 
     border: 1px solid #003da1; 
-    border-radius: 10px;       
+    border-radius: 10px;        
     color: #fff;
     font-size: 15px;
     font-weight: bold;
@@ -357,12 +357,12 @@ window.addEventListener("DOMContentLoaded", function() {
             let dateFormatee = "";
             if (tache.date && tache.date !== "") {
                 let dateChoisie = new Date(tache.date);
-                let optionsDate = { day: 'numeric', month: 'short' };
-                let jourMois = dateChoisie.toLocaleDateString('fr-CA', optionsDate);
+                let optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
+                let jourMoisAnnee = dateChoisie.toLocaleDateString('fr-CA', optionsDate);
                 let optionsHeure = { hour: '2-digit', minute: '2-digit' };
                 let heureMinutes = dateChoisie.toLocaleTimeString('fr-CA', optionsHeure);
                 
-                dateFormatee = jourMois + " à " + heureMinutes;
+                dateFormatee = jourMoisAnnee + " à " + heureMinutes;
             } else {
                 dateFormatee = "Pas de moment prévu";
             }
