@@ -185,35 +185,38 @@ h1 {
     border-radius: 4px;
 }
 
+/* CARTE DE TÂCHE */
 .tache {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     width: 100%;
     margin: 0 0 10px 0; 
-    gap: 10px;
-    background-color: rgba(255, 255, 255, 0.40); 
+    background-color: rgba(255, 255, 255, 0.55); 
     backdrop-filter: blur(8px); 
     -webkit-backdrop-filter: blur(8px);
-    padding: 10px; 
+    padding: 10px 12px; 
     border-radius: 12px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.08);
     box-sizing: border-box;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.tache-ligne-principale {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
 .tache:hover {
-    transform: translateY(-3px); 
+    transform: translateY(-2px); 
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
 }
 
-.tache span {
-    flex-grow: 1; 
-}      
-
 .date-tache {
-    font-size: 13px;        
+    font-size: 12px;        
     color: #007aff;        
     font-weight: bold;      
 }
@@ -239,6 +242,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .btn-supprimer::after {
@@ -289,6 +293,51 @@ h1 {
 
 .tache input[type="checkbox"]:checked + .contenu-tache .date-tache {
     color: #707070;
+}
+
+/* STYLE BANDE ÉCHÉANCE (BAS DE LA CARTE) */
+.bande-echeance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+}
+
+.pastille-echeance {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.pastille-rouge {
+    background-color: #e74c3c;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.6);
+}
+
+.pastille-orange {
+    background-color: #e67e22;
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.6);
+}
+
+.pastille-jaune {
+    background-color: #f1c40f;
+    box-shadow: 0 0 5px rgba(241, 196, 15, 0.6);
+}
+
+.pastille-verte {
+    background-color: #2ecc71;
+    box-shadow: 0 0 5px rgba(46, 204, 113, 0.6);
+}
+
+.pastille-grise {
+    background-color: #95a5a6;
 }
     </style>
 </head>
@@ -344,6 +393,48 @@ window.addEventListener("DOMContentLoaded", function() {
         inputDate.value = "";
     });
 
+    // Génère le HTML pour la bande au bas de la carte
+    function obtenirHtmlBandeEcheance(dateStr) {
+        if (!dateStr || dateStr === "") return "";
+
+        let aujourdhui = new Date();
+        aujourdhui.setHours(0, 0, 0, 0);
+
+        let dateCible = new Date(dateStr);
+        let dateCompare = new Date(dateStr);
+        dateCompare.setHours(0, 0, 0, 0);
+
+        let diffTemps = dateCompare - aujourdhui;
+        let diffJours = Math.round(diffTemps / (1000 * 60 * 60 * 24));
+
+        let classePastille = "";
+        let message = "";
+
+        if (diffJours < 0) {
+            classePastille = "pastille-grise";
+            message = "Rendez-vous passé";
+        } else if (diffJours === 0) {
+            classePastille = "pastille-rouge";
+            message = "C'est aujourd'hui ton rendez-vous !";
+        } else if (diffJours <= 7) {
+            classePastille = "pastille-orange";
+            message = `Dans ${diffJours} jour${diffJours > 1 ? 's' : ''} ton rendez-vous`;
+        } else if (diffJours <= 15) {
+            classePastille = "pastille-jaune";
+            message = `Dans ${diffJours} jours ton rendez-vous`;
+        } else {
+            classePastille = "pastille-verte";
+            message = `Dans ${diffJours} jours ton rendez-vous`;
+        }
+
+        return `
+            <div class="bande-echeance">
+                <span class="pastille-echeance ${classePastille}"></span>
+                <span>${message}</span>
+            </div>
+        `;
+    }
+
     function afficherTaches() {
         let zone = document.getElementById("liste");
         zone.innerHTML = "";
@@ -367,13 +458,18 @@ window.addEventListener("DOMContentLoaded", function() {
                 dateFormatee = "Pas de moment prévu";
             }
 
+            let htmlBande = obtenirHtmlBandeEcheance(tache.date);
+
             bloc.innerHTML = `
-                <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
-                <span class="contenu-tache" style="display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px;">
-                    <span class="date-tache" style="font-size: 12px; margin-bottom: 2px;">${dateFormatee}</span>
-                    <span class="texte-tache" style="font-size: 16px; font-weight: 500; color: #333;">${tache.texte}</span>
-                </span>
-                <button class="btn-supprimer"><div>Supprimer</div></button>
+                <div class="tache-ligne-principale">
+                    <input type="checkbox" ${tache.cochee ? 'checked' : ''}>
+                    <span class="contenu-tache" style="display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px;">
+                        <span class="date-tache" style="font-size: 12px; margin-bottom: 2px;">${dateFormatee}</span>
+                        <span class="texte-tache" style="font-size: 16px; font-weight: 500; color: #333;">${tache.texte}</span>
+                    </span>
+                    <button class="btn-supprimer"><div>Supprimer</div></button>
+                </div>
+                ${htmlBande}
             `;
 
             let checkbox = bloc.querySelector('input[type="checkbox"]');
