@@ -295,49 +295,22 @@ h1 {
     color: #707070;
 }
 
-/* STYLE BANDE ÉCHÉANCE (BAS DE LA CARTE) */
+/* BANDE ÉCHÉANCE AVEC EMOJI IPHONE */
 .bande-echeance {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     margin-top: 8px;
     padding-top: 6px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
     color: #333;
 }
 
-.pastille-echeance {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    flex-shrink: 0;
-}
-
-.pastille-rouge {
-    background-color: #e74c3c;
-    box-shadow: 0 0 5px rgba(231, 76, 60, 0.6);
-}
-
-.pastille-orange {
-    background-color: #e67e22;
-    box-shadow: 0 0 5px rgba(230, 126, 34, 0.6);
-}
-
-.pastille-jaune {
-    background-color: #f1c40f;
-    box-shadow: 0 0 5px rgba(241, 196, 15, 0.6);
-}
-
-.pastille-verte {
-    background-color: #2ecc71;
-    box-shadow: 0 0 5px rgba(46, 204, 113, 0.6);
-}
-
-.pastille-grise {
-    background-color: #95a5a6;
+.emoji-echeance {
+    font-size: 16px;
+    line-height: 1;
 }
     </style>
 </head>
@@ -393,43 +366,42 @@ window.addEventListener("DOMContentLoaded", function() {
         inputDate.value = "";
     });
 
-    // Génère le HTML pour la bande au bas de la carte
+    // Génère le HTML pour la bande au bas de la carte avec les emojis iOS
     function obtenirHtmlBandeEcheance(dateStr) {
         if (!dateStr || dateStr === "") return "";
 
         let aujourdhui = new Date();
         aujourdhui.setHours(0, 0, 0, 0);
 
-        let dateCible = new Date(dateStr);
         let dateCompare = new Date(dateStr);
         dateCompare.setHours(0, 0, 0, 0);
 
         let diffTemps = dateCompare - aujourdhui;
         let diffJours = Math.round(diffTemps / (1000 * 60 * 60 * 24));
 
-        let classePastille = "";
+        let emoji = "";
         let message = "";
 
         if (diffJours < 0) {
-            classePastille = "pastille-grise";
+            emoji = "⚪";
             message = "Rendez-vous passé";
         } else if (diffJours === 0) {
-            classePastille = "pastille-rouge";
+            emoji = "🔴";
             message = "C'est aujourd'hui ton rendez-vous !";
         } else if (diffJours <= 7) {
-            classePastille = "pastille-orange";
+            emoji = "🟠";
             message = `Dans ${diffJours} jour${diffJours > 1 ? 's' : ''} ton rendez-vous`;
         } else if (diffJours <= 15) {
-            classePastille = "pastille-jaune";
+            emoji = "🟡";
             message = `Dans ${diffJours} jours ton rendez-vous`;
         } else {
-            classePastille = "pastille-verte";
+            emoji = "🟢";
             message = `Dans ${diffJours} jours ton rendez-vous`;
         }
 
         return `
             <div class="bande-echeance">
-                <span class="pastille-echeance ${classePastille}"></span>
+                <span class="emoji-echeance">${emoji}</span>
                 <span>${message}</span>
             </div>
         `;
